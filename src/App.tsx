@@ -79,7 +79,7 @@ function App() {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{  display: 'flex', height: '100vh' }}>
       {/* sidebar */}
       <div
         style={{
@@ -190,7 +190,7 @@ function App() {
                   }}
                 >
                   {(messages[selected] || []).map((msg, i) => (
-                    <div key={i} style={{ padding: '2px 0' }}>
+                    <div key={i} style={{borderRadius: '25px',  backgroundColor: "white", marginBottom: '4px', padding: '8px', width: 'fit-content' }}>
                       {msg}
                     </div>
                   ))}
