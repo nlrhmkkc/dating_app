@@ -46,37 +46,48 @@ function App() {
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
     const person = cards.find((c) => c.id === id)
     const personName = person?.name
-    alert(`You swiped ${direction} on ${personName}`)
     if (direction === 'right' && person) {
       setLiked((prev) => [...prev, { name: person.name, imgSrc: person.imgSrc }])
     }
     setCards((prev) => prev.filter((c) => c.id !== id))
   }
 
+  const handleSelectMessage = (name: string) => {
+    // for now just alert; can be replaced with navigation or opening chat
+    alert(`Selected message thread with ${name}`)
+  }
+
   return (
-    <>
-      <div style={{ position: 'relative', width: 360, height: 560, margin: '40px auto' }}>
-        {cards.map((c, idx) => (
-          <Card
-            key={c.id}
-            id={c.id}
-            imgSrc={c.imgSrc}
-            name={c.name}
-            age={c.age}
-            description={c.description}
-            style={{ top: idx * 8, zIndex: cards.length - idx }}
-            onSwipe={handleSwipe}
-          />
-        ))}
-      </div>
-      <div style={{ margin: '20px auto', width: 360 }}>
+    <div style={{ display: 'flex', height: '100vh' }}>
+      {/* sidebar */}
+      <div
+        style={{
+          width: 200,
+          borderRight: '1px solid #ccc',
+          padding: '16px',
+          boxSizing: 'border-box',
+          overflowY: 'auto',
+        }}
+      >
         <h4>Üzenetek</h4>
         {liked.length === 0 ? (
           <p>Nincs még jobbra húzott személy.</p>
         ) : (
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {liked.map((p, i) => (
-              <div key={i} style={{ textAlign: 'center' }}>
+              <button
+                key={i}
+                onClick={() => handleSelectMessage(p.name)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                }}
+              >
                 <img
                   src={p.imgSrc}
                   alt={p.name}
@@ -87,13 +98,31 @@ function App() {
                     objectFit: 'cover',
                   }}
                 />
-                <div style={{ fontSize: '0.8rem' }}>{p.name}</div>
-              </div>
+                <span style={{ fontSize: '0.9rem' }}>{p.name}</span>
+              </button>
             ))}
           </div>
         )}
       </div>
-    </>
+
+      {/* main card area */}
+      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ position: 'relative', width: 360, height: 560 }}>
+          {cards.map((c, idx) => (
+            <Card
+              key={c.id}
+              id={c.id}
+              imgSrc={c.imgSrc}
+              name={c.name}
+              age={c.age}
+              description={c.description}
+              style={{ top: idx * 8, zIndex: cards.length - idx }}
+              onSwipe={handleSwipe}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
 
