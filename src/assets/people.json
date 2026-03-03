@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "name": "Biró Péter",
+    "age": 12,
+    "description": "Ukrán menekült, aki szeret focizni és új barátokat szerezni.",
+    "imagePath": "/images/placeholder1.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Balog Krisztián",
+    "age": 40,
+    "description": "Szoftverfejlesztő, aki szabadidejében kerékpározik és programozási blogot ír.",
+    "imagePath": "/images/placeholder2.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Szabó Júlia",
+    "age": 22,
+    "description": "Egyetemista, művészetek iránt érdeklődő, festményeket készít a szabadidejében.",
+    "imagePath": "/images/placeholder3.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Tóth Gábor",
+    "age": 45,
+    "description": "Tapasztalt üzletember, aki szeret túrázni és golfozni a barátaival.",
+    "imagePath": "/images/placeholder4.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Varga Éva",
+    "age": 30,
+    "description": "Jógaoktató és wellness-rajongó, aki gyakran szervez meditációs hétvégéket.",
+    "imagePath": "/images/placeholder5.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Farkas László",
+    "age": 39,
+    "description": "Grafikus, aki digitális illusztrációkkal foglalkozik és kutyás sétákra jár.",
+    "imagePath": "/images/placeholder6.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Mészáros Máté",
+    "age": 18,
+    "description": "Nem tud vezetni, de mégis akar.",
+    "imagePath": "/images/placeholder7.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Balogh Dávid",
+    "age": 31,
+    "description": "Zenész, több hangszerrel játszik, és saját dalokat ír.",
+    "imagePath": "/images/placeholder8.jpg"
+  },
+  {
+    "id": 9,
+    "name": "Molnár Kira",
+    "age": 52,
+    "description": "Chef, aki egészséges ételeket készít és főzőműsorban szerepel.",
+    "imagePath": "/images/placeholder9.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Kiss Zoltán",
+    "age": 27,
+    "description": "Fotós, aki a városi életet dokumentálja, sok kiállításon vesz részt.",
+    "imagePath": "/images/placeholder10.jpg"
+  }
+]

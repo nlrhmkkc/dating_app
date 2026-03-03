@@ -1,4 +1,14 @@
 import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+
+interface Person{
+  id: number;
+  name: string;
+  age: number;
+  description: string;
+  imagePath: string;
+}
 import Card from './components/Card'
 
 function App() {
@@ -16,6 +26,9 @@ function App() {
   }
 
   return (
+    <>
+
+    </>
     <div style={{ position: 'relative', width: 360, height: 560, margin: '40px auto' }}>
       {cards.map((c, idx) => (
         <Card
