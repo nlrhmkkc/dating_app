@@ -10,17 +10,40 @@ interface Person{
 
 import Card from './components/Card'
 
+interface Person {
+  id: number
+  name: string
+  age: number
+  description: string
+  imagePath: string
+}
+
 function App() {
-  const [cards, setCards] = useState([
-    { id: 1, name: 'Alice', imgSrc: 'https://randomuser.me/api/portraits/women/1.jpg', age: 25, description: 'Loves hiking and outdoor activities.' },
-    { id: 2, name: 'Bob', imgSrc: 'https://randomuser.me/api/portraits/men/2.jpg', age: 30, description: 'Avid reader and coffee enthusiast.' },
-    { id: 3, name: 'Carol', imgSrc: 'https://randomuser.me/api/portraits/women/3.jpg', age: 28, description: 'Passionate about art and music.' },
-  ])
+  const [cards, setCards] = useState<{
+    id: number
+    name: string
+    age: number
+    description: string
+    imgSrc: string
+  }[]>([])
+
+  useEffect(() => {
+    fetch('/src/assets/people.json')
+      .then((res) => res.json())
+      .then((data: Person[]) => {
+        const mapped = data.map((p) => ({
+          id: p.id,
+          name: p.name,
+          age: p.age,
+          description: p.description,
+          imgSrc: p.imagePath,
+        }))
+        setCards(mapped)
+      })
+      .catch((err) => console.error('Failed to load people.json', err))
+  }, [])
 
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
-    
-    alert("swiped: "+direction)
-
     setCards((prev) => prev.filter((c) => c.id !== id))
   }
 
