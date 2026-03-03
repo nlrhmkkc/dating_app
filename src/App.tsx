@@ -44,7 +44,7 @@ function App() {
   }, [])
 
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
-    alert(`You swiped ${direction} on ${cards.find((c) => c.id === id)?.name}`)
+    //alert(`You swiped ${direction} on ${cards.find((c) => c.id === id)?.name}`)
     setCards((prev) => prev.filter((c) => c.id !== id))
   }
 

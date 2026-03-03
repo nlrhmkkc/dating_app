@@ -4,7 +4,7 @@
     "name": "Biró Péter",
     "age": 12,
     "description": "Ukrán menekült, aki szeret focizni és új barátokat szerezni.",
-    "imagePath": "/pictures/David.PNG"
+    "imagePath": "/pictures/Peter.PNG"
   },
   {
     "id": 2,
@@ -18,7 +18,7 @@
     "name": "Szabó Júlia",
     "age": 22,
     "description": "Egyetemista, művészetek iránt érdeklődő, festményeket készít a szabadidejében.",
-    "imagePath": "/images/placeholder3.jpg"
+    "imagePath": "/pictures/Julia.PNG"
   },
   {
     "id": 4,
@@ -46,7 +46,7 @@
     "name": "Mészáros Máté",
     "age": 18,
     "description": "Nem tud vezetni, de mégis akar.",
-    "imagePath": "/images/placeholder7.jpg"
+    "imagePath": "/pictures/Mate.PNG"
   },
   {
     "id": 8,
@@ -67,6 +67,6 @@
     "name": "Kiss Zoltrump",
     "age": 27,
     "description": "Fotós, aki a városi életet dokumentálja, sok kiállításon vesz részt.",
-    "imagePath": "/images/placeholder10.jpg"
+    "imagePath": "/pictures/Zoltrump.PNG"
   }
 ]
