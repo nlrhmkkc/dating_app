@@ -26,9 +26,6 @@ function App() {
   }
 
   return (
-    <>
-
-    </>
     <div style={{ position: 'relative', width: 360, height: 560, margin: '40px auto' }}>
       {cards.map((c, idx) => (
         <Card
