@@ -187,10 +187,13 @@ function App() {
                     border: '1px solid #eee',
                     padding: '4px',
                     marginBottom: '8px',
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
                   }}
                 >
                   {(messages[selected] || []).map((msg, i) => (
-                    <div key={i} style={{borderRadius: '25px',  backgroundColor: "white", marginBottom: '4px', padding: '8px', width: 'fit-content' }}>
+                    <div key={i} style={{ borderRadius: '25px',  backgroundColor: "white", marginBottom: '4px', padding: '8px', width: 'fit-content' }}>
                       {msg}
                     </div>
                   ))}
