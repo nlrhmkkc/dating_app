@@ -26,7 +26,7 @@ function App() {
     description: string
     imgSrc: string
   }[]>([])
-
+  const [liked, setLiked] = useState<string[]>([])
   useEffect(() => {
     fetch('/src/assets/people.json')
       .then((res) => res.json())
@@ -44,25 +44,39 @@ function App() {
   }, [])
 
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
-    //alert(`You swiped ${direction} on ${cards.find((c) => c.id === id)?.name}`)
+    const personName = cards.find((c) => c.id === id)?.name
+    alert(`You swiped ${direction} on ${personName}`)
+    if (direction === 'right' && personName) {
+      setLiked((prev) => [...prev, personName])
+    }
     setCards((prev) => prev.filter((c) => c.id !== id))
   }
 
   return (
-    <div style={{ position: 'relative', width: 360, height: 560, margin: '40px auto' }}>
-      {cards.map((c, idx) => (
-        <Card
-          key={c.id}
-          id={c.id}
-          imgSrc={c.imgSrc}
-          name={c.name}
-          age={c.age}
-          description={c.description}
-          style={{ top: idx * 8, zIndex: cards.length - idx }}
-          onSwipe={handleSwipe}
-        />
-      ))}
-    </div>
+    <>
+      <div style={{ position: 'relative', width: 360, height: 560, margin: '40px auto' }}>
+        {cards.map((c, idx) => (
+          <Card
+            key={c.id}
+            id={c.id}
+            imgSrc={c.imgSrc}
+            name={c.name}
+            age={c.age}
+            description={c.description}
+            style={{ top: idx * 8, zIndex: cards.length - idx }}
+            onSwipe={handleSwipe}
+          />
+        ))}
+      </div>
+      <div style={{ margin: '20px auto', width: 360 }}>
+        <h4>Üzenetek</h4>
+        {liked.length === 0 ? (
+          <p>Nincs még jobbra húzott személy.</p>
+        ) : (
+          liked.map((name, i) => <div key={i}>{name}</div>)
+        )}
+      </div>
+    </>
   )
 }
 
