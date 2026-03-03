@@ -9,6 +9,7 @@ interface Person{
 }
 
 import Card from './components/Card'
+import ChatInput from './components/ChatInput'
 
 interface Person {
   id: number
@@ -27,6 +28,8 @@ function App() {
     imgSrc: string
   }[]>([])
   const [liked, setLiked] = useState<{name: string; imgSrc: string}[]>([])
+  const [selected, setSelected] = useState<string | null>(null)
+  const [messages, setMessages] = useState<Record<string, string[]>>({})
   useEffect(() => {
     fetch('/src/assets/people.json')
       .then((res) => res.json())
@@ -53,8 +56,19 @@ function App() {
   }
 
   const handleSelectMessage = (name: string) => {
-    // for now just alert; can be replaced with navigation or opening chat
-    alert(`Selected message thread with ${name}`)
+    setSelected(name)
+    setMessages((prev) => {
+      if (prev[name]) return prev
+      return { ...prev, [name]: [] }
+    })
+  }
+
+  const handleSend = (text: string) => {
+    if (!selected) return
+    setMessages((prev) => {
+      const prevMsgs = prev[selected] || []
+      return { ...prev, [selected]: [...prevMsgs, text] }
+    })
   }
 
   return (
@@ -107,20 +121,55 @@ function App() {
 
       {/* main card area */}
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ position: 'relative', width: 360, height: 560 }}>
-          {cards.map((c, idx) => (
-            <Card
-              key={c.id}
-              id={c.id}
-              imgSrc={c.imgSrc}
-              name={c.name}
-              age={c.age}
-              description={c.description}
-              style={{ top: idx * 8, zIndex: cards.length - idx }}
-              onSwipe={handleSwipe}
-            />
-          ))}
-        </div>
+        {selected ? (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: 360,
+              height: 560,
+              border: '1px solid #ccc',
+              padding: '8px',
+              boxSizing: 'border-box',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0 }}>Chat with {selected}</h3>
+              <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✖</button>
+            </div>
+            <div
+              style={{
+                flex: 1,
+                overflowY: 'auto',
+                border: '1px solid #eee',
+                padding: '4px',
+                marginBottom: '8px',
+              }}
+            >
+              {(messages[selected] || []).map((msg, i) => (
+                <div key={i} style={{ padding: '2px 0' }}>
+                  {msg}
+                </div>
+              ))}
+            </div>
+            <ChatInput onSend={handleSend} />
+          </div>
+        ) : (
+          <div style={{ position: 'relative', width: 360, height: 560 }}>
+            {cards.map((c, idx) => (
+              <Card
+                key={c.id}
+                id={c.id}
+                imgSrc={c.imgSrc}
+                name={c.name}
+                age={c.age}
+                description={c.description}
+                style={{ top: idx * 8, zIndex: cards.length - idx }}
+                onSwipe={handleSwipe}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
