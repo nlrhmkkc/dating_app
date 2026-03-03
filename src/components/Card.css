@@ -21,6 +21,14 @@
     align-items: center;
     justify-content: center;
     cursor: grab;
+
+    .card-img {
+        width: 90%;
+        aspect-ratio: 1;
+        height: auto;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
 }
 
 img {
