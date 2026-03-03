@@ -20,7 +20,12 @@ export default function Card({ id, imgSrc, name, age, description, onSwipe, styl
   const threshold = 120
 
   const onPointerDown = (e: React.PointerEvent) => {
-    (e.target as Element).setPointerCapture(e.pointerId)
+    // capture on the card element so release works even if pointer moves over children
+    if (elRef.current) {
+      elRef.current.setPointerCapture(e.pointerId)
+    } else {
+      (e.target as Element).setPointerCapture(e.pointerId)
+    }
     startRef.current = { x: e.clientX, y: e.clientY }
     swipedRef.current = { swiped: false }
     setTransform((s) => ({ ...s, transition: '' }))
@@ -35,14 +40,27 @@ export default function Card({ id, imgSrc, name, age, description, onSwipe, styl
   }
 
   const onPointerUp = (e: React.PointerEvent) => {
-    (e.target as Element).releasePointerCapture(e.pointerId)
+    // release capture from the card element
+    if (elRef.current) {
+      try {
+        elRef.current.releasePointerCapture(e.pointerId)
+      } catch {}
+    } else {
+      try {
+        ;(e.target as Element).releasePointerCapture(e.pointerId)
+      } catch {}
+    }
+
     if (!startRef.current) return
-    const dx = transform.x
+
+    // calculate final dx from the start position to ensure accurate value without relying on state sync
+    const dx = e.clientX - startRef.current.x
     const dir = dx > 0 ? 'right' : 'left'
     if (Math.abs(dx) > threshold) {
       const flyX = (dir === 'right' ? window.innerWidth : -window.innerWidth) * 1.2
       setTransform({ x: flyX, y: transform.y, rot: transform.rot, transition: 'transform 320ms ease' })
       swipedRef.current = { swiped: true, dir }
+      startRef.current = null
       return
     }
     setTransform({ x: 0, y: 0, rot: 0, transition: 'transform 200ms ease' })
@@ -74,11 +92,10 @@ export default function Card({ id, imgSrc, name, age, description, onSwipe, styl
       style={styleObj}
     >
       <div className="cardContent">
-        <img src={imgSrc} alt={name} />
+        <img className="card-img" src={imgSrc} alt={name} draggable={false} />
         <h3>{name}</h3>
         <p>{age} years old</p>
         <p>{description}</p>
-        <p>Swipe left or right</p>
       </div>
     </div>
   )
