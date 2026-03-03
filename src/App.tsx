@@ -1,6 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-import { useEffect } from 'react'
+interface Person{
+  id: number;
+  name: string;
+  age: number;
+  description: string;
+  imagePath: string;
+}
+
 import Card from './components/Card'
 
 interface Person {

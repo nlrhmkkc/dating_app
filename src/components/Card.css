@@ -1,25 +1,44 @@
 .card {
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  width: 320px;
-  height: 480px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #fff, #f5f7fb);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-  touch-action: pan-y;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: grab;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 320px;
+    height: 480px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fff, #f5f7fb);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    touch-action: pan-y;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+}
+
+img {
+    -webkit-user-drag: none;
+    user-drag: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    /* Let the parent card receive pointer events (so dragging the image drags the card) */
+    pointer-events: none;
 }
 
 .card:active {
-  cursor: grabbing;
+    cursor: grabbing; 
 }
 
 .cardContent {
-  text-align: center;
+    text-align: center;
 }
