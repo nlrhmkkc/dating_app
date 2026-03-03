@@ -26,7 +26,7 @@ function App() {
     description: string
     imgSrc: string
   }[]>([])
-  const [liked, setLiked] = useState<string[]>([])
+  const [liked, setLiked] = useState<{name: string; imgSrc: string}[]>([])
   useEffect(() => {
     fetch('/src/assets/people.json')
       .then((res) => res.json())
@@ -44,10 +44,11 @@ function App() {
   }, [])
 
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
-    const personName = cards.find((c) => c.id === id)?.name
+    const person = cards.find((c) => c.id === id)
+    const personName = person?.name
     alert(`You swiped ${direction} on ${personName}`)
-    if (direction === 'right' && personName) {
-      setLiked((prev) => [...prev, personName])
+    if (direction === 'right' && person) {
+      setLiked((prev) => [...prev, { name: person.name, imgSrc: person.imgSrc }])
     }
     setCards((prev) => prev.filter((c) => c.id !== id))
   }
@@ -73,7 +74,23 @@ function App() {
         {liked.length === 0 ? (
           <p>Nincs még jobbra húzott személy.</p>
         ) : (
-          liked.map((name, i) => <div key={i}>{name}</div>)
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {liked.map((p, i) => (
+              <div key={i} style={{ textAlign: 'center' }}>
+                <img
+                  src={p.imgSrc}
+                  alt={p.name}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                  }}
+                />
+                <div style={{ fontSize: '0.8rem' }}>{p.name}</div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </>
