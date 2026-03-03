@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 
 interface Person{
   id: number;
@@ -9,6 +7,7 @@ interface Person{
   description: string;
   imagePath: string;
 }
+
 import Card from './components/Card'
 
 function App() {
