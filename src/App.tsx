@@ -27,8 +27,15 @@ function App() {
     description: string
     imgSrc: string
   }[]>([])
-  const [liked, setLiked] = useState<{name: string; imgSrc: string}[]>([])
+  const [liked, setLiked] = useState<{
+    id: number
+    name: string
+    age: number
+    description: string
+    imgSrc: string
+  }[]>([])
   const [selected, setSelected] = useState<string | null>(null)
+  const [focusedPersonId, setFocusedPersonId] = useState<number | null>(null)
   const [messages, setMessages] = useState<Record<string, string[]>>({})
   useEffect(() => {
     fetch('/src/assets/people.json')
@@ -48,15 +55,15 @@ function App() {
 
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
     const person = cards.find((c) => c.id === id)
-    const personName = person?.name
     if (direction === 'right' && person) {
-      setLiked((prev) => [...prev, { name: person.name, imgSrc: person.imgSrc }])
+      setLiked((prev) => [...prev, { id: person.id, name: person.name, age: person.age, description: person.description, imgSrc: person.imgSrc }])
     }
     setCards((prev) => prev.filter((c) => c.id !== id))
   }
 
   const handleSelectMessage = (name: string) => {
     setSelected(name)
+    setFocusedPersonId(null)
     setMessages((prev) => {
       if (prev[name]) return prev
       return { ...prev, [name]: [] }
@@ -134,25 +141,63 @@ function App() {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0 }}>Chat with {selected}</h3>
-              <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✖</button>
+              <h3 style={{ margin: 0 }}>
+                <button
+                  onClick={() => {
+                    const p = liked.find((x) => x.name === selected)
+                    if (p) setFocusedPersonId(p.id)
+                  }}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: '1rem' }}
+                >
+                  Chat with {selected}
+                </button>
+              </h3>
+              <button onClick={() => { setSelected(null); setFocusedPersonId(null) }} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✖</button>
             </div>
-            <div
-              style={{
-                flex: 1,
-                overflowY: 'auto',
-                border: '1px solid #eee',
-                padding: '4px',
-                marginBottom: '8px',
-              }}
-            >
-              {(messages[selected] || []).map((msg, i) => (
-                <div key={i} style={{ padding: '2px 0' }}>
-                  {msg}
+            {focusedPersonId ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ textAlign: 'right' }}>
+                  <button onClick={() => setFocusedPersonId(null)} style={{ padding: '4px', cursor: 'pointer' }}>Vissza a chathez</button>
                 </div>
-              ))}
-            </div>
-            <ChatInput onSend={handleSend} />
+                <div style={{ position: 'relative', width: '100%', height: 420 }}>
+                  {(() => {
+                    const p = liked.find((x) => x.id === focusedPersonId)
+                    if (!p) return <div>Kártya nem található.</div>
+                    return (
+                      <Card
+                        key={p.id}
+                        id={p.id}
+                        imgSrc={p.imgSrc}
+                        name={p.name}
+                        age={p.age}
+                        description={p.description}
+                        style={{ top: 0, zIndex: 1 }}
+                        onSwipe={() => {}}
+                      />
+                    )
+                  })()}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div
+                  style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    border: '1px solid #eee',
+                    padding: '4px',
+                    marginBottom: '8px',
+                  }}
+                >
+                  {(messages[selected] || []).map((msg, i) => (
+                    <div key={i} style={{ padding: '2px 0' }}>
+                      {msg}
+                    </div>
+                  ))}
+                </div>
+                <ChatInput onSend={handleSend} />
+              </>
+            )}
           </div>
         ) : (
           <div style={{ position: 'relative', width: 360, height: 560 }}>
