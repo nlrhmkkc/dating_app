@@ -1,0 +1,25 @@
+.card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 320px;
+  height: 480px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fff, #f5f7fb);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  touch-action: pan-y;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.cardContent {
+  text-align: center;
+}
