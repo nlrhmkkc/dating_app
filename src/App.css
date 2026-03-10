@@ -3,3 +3,24 @@
   box-sizing: border-box;
   margin: 0;
 }
+
+#card-holder {
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  #red{
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(90deg,red, rgba(0, 0, 0, 0));
+  }
+
+  #green{
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(-90deg, lime, rgba(0, 0, 0, 0));
+  }
+}
+

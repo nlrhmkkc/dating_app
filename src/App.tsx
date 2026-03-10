@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import './App.css'
 
 interface Person{
   id: number;
@@ -37,6 +38,8 @@ function App() {
   const [selected, setSelected] = useState<string | null>(null)
   const [focusedPersonId, setFocusedPersonId] = useState<number | null>(null)
   const [messages, setMessages] = useState<Record<string, string[]>>({})
+  const [dragProgress, setDragProgress] = useState(0) // -1..1
+
   useEffect(() => {
     fetch('/src/assets/people.json')
       .then((res) => res.json())
@@ -59,6 +62,8 @@ function App() {
       setLiked((prev) => [...prev, { id: person.id, name: person.name, age: person.age, description: person.description, imgSrc: person.imgSrc }])
     }
     setCards((prev) => prev.filter((c) => c.id !== id))
+    // reset overlay
+    setDragProgress(0)
   }
 
   const handleSelectMessage = (name: string) => {
@@ -77,6 +82,10 @@ function App() {
       return { ...prev, [selected]: [...prevMsgs, text] }
     })
   }
+
+  // compute opacities: when centered -> 0, when moved fully to side -> 0.75
+  const redOpacity = Math.max(0, -dragProgress) * 0.75
+  const greenOpacity = Math.max(0, dragProgress) * 0.75
 
   return (
     <div style={{  display: 'flex', height: '100vh' }}>
@@ -127,7 +136,13 @@ function App() {
       </div>
 
       {/* main card area */}
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div id = "card-holder" style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div
+          id="red"
+          style={{
+            opacity: redOpacity,
+          }}
+        />
         {selected ? (
           <div
             style={{
@@ -164,16 +179,24 @@ function App() {
                     const p = liked.find((x) => x.id === focusedPersonId)
                     if (!p) return <div>Kártya nem található.</div>
                     return (
-                      <Card
-                        key={p.id}
-                        id={p.id}
-                        imgSrc={p.imgSrc}
-                        name={p.name}
-                        age={p.age}
-                        description={p.description}
-                        style={{ top: 0, zIndex: 1 }}
-                        onSwipe={() => {}}
-                      />
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%', height: '100%', boxSizing: 'border-box' }}>
+                        <img
+                          src={p.imgSrc}
+                          alt={p.name}
+                          draggable={false}
+                          style={{
+                            width: '100%',
+                            height: 320,
+                            objectFit: 'cover',
+                            borderRadius: 12,
+                            pointerEvents: 'none',
+                          }}
+                        />
+                        <div style={{ textAlign: 'center', padding: '0 8px' }}>
+                          <h4 style={{ margin: 0 }}>{p.name}, {p.age}</h4>
+                          <p style={{ marginTop: 6 }}>{p.description}</p>
+                        </div>
+                      </div>
                     )
                   })()}
                 </div>
@@ -204,20 +227,30 @@ function App() {
           </div>
         ) : (
           <div style={{ position: 'relative', width: 360, height: 560 }}>
-            {cards.map((c, idx) => (
-              <Card
-                key={c.id}
-                id={c.id}
-                imgSrc={c.imgSrc}
-                name={c.name}
-                age={c.age}
-                description={c.description}
-                style={{ top: idx * 8, zIndex: cards.length - idx }}
-                onSwipe={handleSwipe}
-              />
-            ))}
+            {cards.map((c, idx) => {
+              const isTop = idx === 0
+              return (
+                <Card
+                  key={c.id}
+                  id={c.id}
+                  imgSrc={c.imgSrc}
+                  name={c.name}
+                  age={c.age}
+                  description={c.description}
+                  style={{ top: idx * 8, zIndex: cards.length - idx }}
+                  onSwipe={handleSwipe}
+                  onDragProgress={isTop ? setDragProgress : undefined}
+                />
+              )
+            })}
           </div>
         )}
+        <div
+          id="green"
+          style={{
+            opacity: greenOpacity,
+          }}
+        />
       </div>
     </div>
   )
