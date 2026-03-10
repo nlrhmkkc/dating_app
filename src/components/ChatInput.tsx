@@ -1,29 +1,32 @@
 import React, { useRef, useState } from 'react'
 
+type Payload = { type: 'text' | 'image'; content: string }
+
 type Props = {
-  onSend: (text: string) => void
+  onSend: (p: Payload) => void
 }
 
 export default function ChatInput({ onSend }: Props) {
   const [text, setText] = useState('')
   const [showPicker, setShowPicker] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const fileRef = useRef<HTMLInputElement | null>(null)
 
   const emojis = ['😀', '😂', '😍', '😅', '😭', '😡', '👍', '🔥', '🎉', '🥰']
 
-  const handleSend = () => {
+  const sendText = () => {
     const trimmed = text.trim()
     if (!trimmed) return
-    onSend(trimmed)
+    onSend({ type: 'text', content: trimmed })
     setText('')
     setShowPicker(false)
     inputRef.current?.focus()
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSend()
+      sendText()
     }
     if (e.key === 'Escape') {
       setShowPicker(false)
@@ -34,6 +37,19 @@ export default function ChatInput({ onSend }: Props) {
     setText((t) => t + emoji)
     setShowPicker(false)
     inputRef.current?.focus()
+  }
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = reader.result as string
+      onSend({ type: 'image', content: result })
+      // reset so same file can be selected again
+      if (fileRef.current) fileRef.current.value = ''
+    }
+    reader.readAsDataURL(file)
   }
 
   return (
@@ -54,7 +70,6 @@ export default function ChatInput({ onSend }: Props) {
         }}
       />
 
-      {/* Emoji button (placed between the text box and the send button) */}
       <div style={{ position: 'relative' }}>
         <button
           type="button"
@@ -112,9 +127,21 @@ export default function ChatInput({ onSend }: Props) {
         )}
       </div>
 
+      <input
+        ref={fileRef}
+        id="chat-file-input"
+        type="file"
+        accept="image/*"
+        onChange={onFileChange}
+        style={{ display: 'none' }}
+      />
+      <label htmlFor="chat-file-input" style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 10px', borderRadius: 8, background: '#f2f2f2', cursor: 'pointer' }}>
+        📷
+      </label>
+
       <button
         type="button"
-        onClick={handleSend}
+        onClick={sendText}
         style={{
           padding: '8px 12px',
           borderRadius: 20,
