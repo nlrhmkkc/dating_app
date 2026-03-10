@@ -68,5 +68,33 @@
     "age": 27,
     "description": "Fotós, aki a városi életet dokumentálja, sok kiállításon vesz részt.",
     "imagePath": "/pictures/Zoltrump.PNG"
+  },
+  {
+    "id": 11,
+    "name": "Orbán Király Viktor",
+    "age": 69,
+    "description": "Politikus, nagyon sikeres. Gazdag husi. Biztos választás.",
+    "imagePath": "/pictures/Orban.PNG"
+  },
+  {
+    "id": 12,
+    "name": "Olajos Lajos",
+    "age": 51,
+    "description": "Máv ellenőr. Sexy bajusz. Szeret olvasni playboy magazinokat.",
+    "imagePath": "/pictures/Olajos.PNG"
+  },
+  {
+    "id": 13,
+    "name": "Toldi Miklós",
+    "age": 20,
+    "description": "Nagyon bátor katona. Szereti a véres hurkát. Szngli farkasokat keres.",
+    "imagePath": "/pictures/Toldi.PNG"
+  },
+  {
+    "id": 14,
+    "name": "Polgár Jenő",
+    "age": 48,
+    "description": "Ggazdag popolgár város jenő polgár",
+    "imagePath": "/pictures/Polgar.PNG"
   }
 ]
