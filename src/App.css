@@ -131,6 +131,23 @@ html, body, #root {
   gap: 8px;
 }
 
+/* chat üzenetek: működik a scroll, de a scrollbar rejtve van */
+.chatMessages {
+  overflow-y: auto;
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* WebKit-based böngészők */
+.chatMessages::-webkit-scrollbar {
+  display: none;
+}
+
+/* opcionális: biztosítjuk, hogy a belső elemek ne törjék el a layoutot */
+.chatMessages > * {
+  /* ha kell, finomítható */
+}
+
 /* Message bubble helpers */
 .msg-row {
   display: flex;

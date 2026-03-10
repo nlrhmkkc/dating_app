@@ -131,14 +131,20 @@ function App() {
     reader.readAsDataURL(file)
   }
 
-  const handleBackToSearch = () => {
-    setCards((prev) => prev.filter((c) => !liked.some((l) => l.id === c.id)))
-    setSelected(null)
-    setFocusedPersonId(null)
-  }
-
   const redOpacity = Math.max(0, -dragProgress) * 0.75
   const greenOpacity = Math.max(0, dragProgress) * 0.75
+
+  // ref a chat üzenetek konténeréhez
+  const messagesRef = useRef<HTMLDivElement | null>(null)
+
+  // amikor változnak az üzenetek vagy a kiválasztott chat, görgessünk az utolsó üzenethez
+  useEffect(() => {
+    if (!selected) return
+    const el = messagesRef.current
+    if (!el) return
+    // azonnal az aljára állítjuk (ha inkább smooth kell, használd a behavior:'smooth'-ot)
+    el.scrollTop = el.scrollHeight
+  }, [messages, selected])
 
   return (
     <div className="app-root">
@@ -217,7 +223,19 @@ function App() {
                 </div>
               ) : (
                 <>
-                  <div className="chat-messages" style={{ flex: 1, overflowY: 'auto', border: '1px solid #eee', padding: '8px', marginBottom: '8px', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'stretch' }}>
+                  <div
+                    ref={messagesRef}
+                    className="chatMessages"
+                    style={{
+                      flex: 1,
+                      border: '1px solid #eee',
+                      padding: '8px',
+                      marginBottom: '8px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                    }}
+                  >
                     {(messages[selected] || []).map((msg, i) => (
                       <div key={i} className={`msg-row ${msg.from === 'me' ? 'msg-me' : 'msg-them'}`} style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: msg.from === 'me' ? 'flex-end' : 'flex-start' }}>
                         {msg.from === 'them' ? (
