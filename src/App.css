@@ -4,6 +4,10 @@
   margin: 0;
 }
 
+:root{
+  overflow: hidden;
+}
+
 #card-holder {
   width: 60%;
   display: flex;
