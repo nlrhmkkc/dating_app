@@ -247,7 +247,10 @@ function App() {
               )}
             </div>
           ) : (
-            <div className="cards-area" style={{ position: 'relative', width: 432, height: 560 }}>
+            <div className="cards-area" style={{ position: 'relative', width: 432, height: 560, textAlign: 'center' }}>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                <span>Elfogytak a kártyák :c</span>
+              </div>
               {cards.map((c, idx) => {
                 const isTop = idx === 0
                 return <Card key={c.id} id={c.id} imgSrc={c.imgSrc} name={c.name} age={c.age} description={c.description} style={{ top: idx * 8, zIndex: cards.length - idx }} onSwipe={handleSwipe} onDragProgress={isTop ? setDragProgress : undefined} />
