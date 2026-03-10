@@ -1,16 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-
-interface Person{
-  id: number;
-  name: string;
-  age: number;
-  description: string;
-  imagePath: string;
-}
-
-import Card from './components/Card'
-import ChatInput from './components/ChatInput'
+import autoResponsesData from './assets/auto_responses.json'
 
 interface Person {
   id: number
@@ -19,6 +9,12 @@ interface Person {
   description: string
   imagePath: string
 }
+
+// DEFAULT fallback (ha a JSON nem tölthető)
+const DEFAULT_AUTO_RESPONSES = Array.from({ length: 100 }, (_, i) => `Automatikus válasz #${i + 1}`)
+
+import Card from './components/Card'
+import ChatInput from './components/ChatInput'
 
 function App() {
   const [cards, setCards] = useState<{
@@ -37,10 +33,15 @@ function App() {
   }[]>([])
   const [selected, setSelected] = useState<string | null>(null)
   const [focusedPersonId, setFocusedPersonId] = useState<number | null>(null)
-  const [messages, setMessages] = useState<Record<string, string[]>>({})
+  // messages now carry sender info
+  const [messages, setMessages] = useState<Record<string, { sender: 'me' | 'them'; text: string }[]>>({})
   const [dragProgress, setDragProgress] = useState(0) // -1..1
 
+  // auto responses state
+  const [autoResponses, setAutoResponses] = useState<string[]>([])
+
   useEffect(() => {
+    // betöltés people.json (marad)
     fetch('/src/assets/people.json')
       .then((res) => res.json())
       .then((data: Person[]) => {
@@ -54,6 +55,14 @@ function App() {
         setCards(mapped)
       })
       .catch((err) => console.error('Failed to load people.json', err))
+
+    // auto_responses.json importból betöltése (bundle-olt fájl a src-ből)
+    if (Array.isArray(autoResponsesData) && autoResponsesData.every((x) => typeof x === 'string')) {
+      setAutoResponses(autoResponsesData)
+    } else {
+      console.warn('auto_responses.json nem megfelelő formátum, fallback használva.')
+      setAutoResponses(DEFAULT_AUTO_RESPONSES)
+    }
   }, [])
 
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
@@ -75,12 +84,24 @@ function App() {
     })
   }
 
+  // Üzenetküldés: felhasználói üzenet + automatikus véletlen válasz 100 lehetőség közül
   const handleSend = (text: string) => {
     if (!selected) return
+    // push user's message
     setMessages((prev) => {
       const prevMsgs = prev[selected] || []
-      return { ...prev, [selected]: [...prevMsgs, text] }
+      return { ...prev, [selected]: [...prevMsgs, { sender: 'me', text }] }
     })
+
+    // kis késleltetéssel automatikus válasz (a másik oldalon, világoskék)
+    setTimeout(() => {
+      const pool = autoResponses.length ? autoResponses : DEFAULT_AUTO_RESPONSES
+      const reply = pool[Math.floor(Math.random() * pool.length)]
+      setMessages((prev) => {
+        const prevMsgs = prev[selected] || []
+        return { ...prev, [selected]: [...prevMsgs, { sender: 'them', text: reply }] }
+      })
+    }, 700)
   }
 
   // compute opacities: when centered -> 0, when moved fully to side -> 0.75
@@ -88,7 +109,7 @@ function App() {
   const greenOpacity = Math.max(0, dragProgress) * 0.75
 
   return (
-    <div style={{  display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: '100vh' }}>
       {/* sidebar */}
       <div
         style={{
@@ -136,7 +157,7 @@ function App() {
       </div>
 
       {/* main card area */}
-      <div id = "card-holder" style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div id="card-holder" style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div
           id="red"
           style={{
@@ -208,18 +229,35 @@ function App() {
                     flex: 1,
                     overflowY: 'auto',
                     border: '1px solid #eee',
-                    padding: '4px',
+                    padding: '8px',
                     marginBottom: '8px',
-                    display: 'flex', 
+                    display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'flex-end',
+                    gap: '6px',
+                    alignItems: 'stretch',
                   }}
                 >
-                  {(messages[selected] || []).map((msg, i) => (
-                    <div key={i} style={{ borderRadius: '25px',  backgroundColor: "white", marginBottom: '4px', padding: '8px', width: 'fit-content' }}>
-                      {msg}
-                    </div>
-                  ))}
+                  {(messages[selected] || []).map((msg, i) => {
+                    const isMe = msg.sender === 'me'
+                    return (
+                      <div
+                        key={i}
+                        style={{
+                          alignSelf: isMe ? 'flex-end' : 'flex-start',
+                          backgroundColor: isMe ? 'white' : '#d9f6ff',
+                          borderRadius: 18,
+                          padding: '8px 12px',
+                          marginBottom: 4,
+                          maxWidth: '80%',
+                          boxShadow: isMe ? '0 1px 0 rgba(0,0,0,0.05)' : undefined,
+                          color: '#000',
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        {msg.text}
+                      </div>
+                    )
+                  })}
                 </div>
                 <ChatInput onSend={handleSend} />
               </>
