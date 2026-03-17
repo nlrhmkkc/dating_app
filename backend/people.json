@@ -1,0 +1,100 @@
+[
+  {
+    "id": 1,
+    "name": "Biró Péter",
+    "age": 12,
+    "description": "Ukrán menekült, aki szeret focizni és új barátokat szerezni.",
+    "imagePath": "/pictures/Peter.PNG"
+  },
+  {
+    "id": 2,
+    "name": "Balog Krisztián",
+    "age": 40,
+    "description": "Szoftverfejlesztő, aki szabadidejében kerékpározik és programozási blogot ír.",
+    "imagePath": "/pictures/Krisz.PNG"
+  },
+  {
+    "id": 3,
+    "name": "Szabó Júlia",
+    "age": 22,
+    "description": "Egyetemista, művészetek iránt érdeklődő, festményeket készít a szabadidejében.",
+    "imagePath": "/pictures/Julia.PNG"
+  },
+  {
+    "id": 4,
+    "name": "Tóth Gábor",
+    "age": 45,
+    "description": "Tapasztalt üzletember, aki szeret túrázni és golfozni a barátaival.",
+    "imagePath": "/pictures/Gabor.PNG"
+  },
+  {
+    "id": 5,
+    "name": "Varga Éva",
+    "age": 30,
+    "description": "Jógaoktató és wellness-rajongó, aki gyakran szervez meditációs hétvégéket.",
+    "imagePath": "/pictures/Eva.PNG"
+  },
+  {
+    "id": 6,
+    "name": "Farkas László",
+    "age": 39,
+    "description": "Grafikus, aki digitális illusztrációkkal foglalkozik és kutyás sétákra jár.",
+    "imagePath": "/pictures/Laszlo.PNG"
+  },
+  {
+    "id": 7,
+    "name": "Mészáros Máté",
+    "age": 18,
+    "description": "Nem tud vezetni, de mégis akar.",
+    "imagePath": "/pictures/Mate.PNG"
+  },
+  {
+    "id": 8,
+    "name": "Balogh Dávid",
+    "age": 31,
+    "description": "Zenész, több hangszerrel játszik, és saját dalokat ír.",
+    "imagePath": "/pictures/David.PNG"
+  },
+  {
+    "id": 9,
+    "name": "Molnár Kira",
+    "age": 52,
+    "description": "Chef, aki egészséges ételeket készít és főzőműsorban szerepel.",
+    "imagePath": "/pictures/Kira.PNG"
+  },
+  {
+    "id": 10,
+    "name": "Kiss Zoltrump",
+    "age": 27,
+    "description": "Fotós, aki a városi életet dokumentálja, sok kiállításon vesz részt.",
+    "imagePath": "/pictures/Zoltrump.PNG"
+  },
+  {
+    "id": 11,
+    "name": "Orbán Király Viktor",
+    "age": 69,
+    "description": "Politikus, nagyon sikeres. Gazdag husi. Biztos választás.",
+    "imagePath": "/pictures/Orban.PNG"
+  },
+  {
+    "id": 12,
+    "name": "Olajos Lajos",
+    "age": 51,
+    "description": "Máv ellenőr. Sexy bajusz. Szeret olvasni playboy magazinokat.",
+    "imagePath": "/pictures/Olajos.PNG"
+  },
+  {
+    "id": 13,
+    "name": "Toldi Miklós",
+    "age": 20,
+    "description": "Nagyon bátor katona. Szereti a véres hurkát. Szngli farkasokat keres.",
+    "imagePath": "/pictures/Toldi.PNG"
+  },
+  {
+    "id": 14,
+    "name": "Polgár Jenő",
+    "age": 48,
+    "description": "Ggazdag popolgár város jenő polgár",
+    "imagePath": "/pictures/Polgar.PNG"
+  }
+]

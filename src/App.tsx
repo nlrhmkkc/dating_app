@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import './App.css'
 import Card from './components/Card'
 import ChatInput from './components/ChatInput'
-import autoResponsesData from './assets/auto_responses.json'
+
+const BACKEND = 'http://localhost:8000'
 
 interface Person {
   id: number
@@ -13,56 +14,83 @@ interface Person {
 }
 
 type Msg = { type: 'text' | 'image'; content: string; from: 'me' | 'them'; avatar?: string }
-
-// DEFAULT fallback (ha a JSON nem tölthető)
-const DEFAULT_AUTO_RESPONSES = Array.from({ length: 100 }, (_, i) => `Automatikus válasz #${i + 1}`)
+type LikedPerson = { id: number; name: string; age: number; description: string; imgSrc: string }
 
 function App() {
-  const [cards, setCards] = useState<{ id: number; name: string; age: number; description: string; imgSrc: string }[]>([])
-  const [liked, setLiked] = useState<{ id: number; name: string; age: number; description: string; imgSrc: string }[]>([])
+  const [cards, setCards] = useState<LikedPerson[]>([])
+
+  const [liked, setLiked] = useState<LikedPerson[]>(() => {
+    try {
+      const stored = localStorage.getItem('liked')
+      return stored ? JSON.parse(stored) : []
+    } catch { return [] }
+  })
+
   const [selected, setSelected] = useState<string | null>(null)
   const [focusedPersonId, setFocusedPersonId] = useState<number | null>(null)
   const [messages, setMessages] = useState<Record<string, Msg[]>>({})
-  const [dragProgress, setDragProgress] = useState(0) // -1..1
+  const [dragProgress, setDragProgress] = useState(0)
 
-  // profil kép (me)
-  const [userPic, setUserPic] = useState<string>('pictures/profile.png')
+  const [userPic, setUserPic] = useState<string>(() => {
+    return localStorage.getItem('userPic') || 'pictures/profile.png'
+  })
   const profileInputRef = useRef<HTMLInputElement | null>(null)
+  const messagesRef = useRef<HTMLDivElement | null>(null)
 
-  // auto responses state
-  const [autoResponses, setAutoResponses] = useState<string[]>([])
-
+  // liked mentése localStorage-ba
   useEffect(() => {
-    // load people
-    fetch('/src/assets/people.json')
+    localStorage.setItem('liked', JSON.stringify(liked))
+  }, [liked])
+
+  // userPic mentése
+  useEffect(() => {
+    localStorage.setItem('userPic', userPic)
+  }, [userPic])
+
+  // People betöltése backendről, liked személyek kiszűrése
+  useEffect(() => {
+    fetch(`${BACKEND}/api/people/`)
       .then((res) => res.json())
       .then((data: Person[]) => {
-        const mapped = data.map((p) => ({
-          id: p.id,
-          name: p.name,
-          age: p.age,
-          description: p.description,
-          imgSrc: p.imagePath,
-        }))
+        const likedIds = new Set(liked.map((l) => l.id))
+        const mapped = data
+          .filter((p) => !likedIds.has(p.id))
+          .map((p) => ({
+            id: p.id,
+            name: p.name,
+            age: p.age,
+            description: p.description,
+            imgSrc: p.imagePath,
+          }))
         setCards(mapped)
       })
-      .catch((err) => console.error('Failed to load people.json', err))
-
-    // load auto responses from imported JSON (bundle)
-    if (Array.isArray(autoResponsesData) && autoResponsesData.every((x) => typeof x === 'string')) {
-      setAutoResponses(autoResponsesData)
-    } else {
-      console.warn('auto_responses.json nem megfelelő formátum, fallback használva.')
-      setAutoResponses(DEFAULT_AUTO_RESPONSES)
-    }
+      .catch((err) => console.error('Failed to load people from backend', err))
   }, [])
+
+  // Üzenetek betöltése backendről, ha kiválasztunk egy chatet
+  useEffect(() => {
+    if (!selected) return
+    fetch(`${BACKEND}/api/messages/${encodeURIComponent(selected)}/`)
+      .then((res) => res.json())
+      .then((data: Msg[]) => {
+        setMessages((prev) => ({ ...prev, [selected]: data }))
+      })
+      .catch((err) => console.error('Failed to load messages', err))
+  }, [selected])
+
+  // Scroll az utolsó üzenethez
+  useEffect(() => {
+    if (!selected) return
+    const el = messagesRef.current
+    if (!el) return
+    el.scrollTop = el.scrollHeight
+  }, [messages, selected])
 
   const handleSwipe = (id: number, direction: 'left' | 'right') => {
     const person = cards.find((c) => c.id === id)
     if (direction === 'right' && person) {
-      setLiked((prev) => [...prev, { id: person.id, name: person.name, age: person.age, description: person.description, imgSrc: person.imgSrc }])
+      setLiked((prev) => [...prev, person])
 
-      // example special message (kept, but using safe Msg shape)
       if (person.id === 2) {
         setMessages((prev) => {
           const prevMsgs = prev[person.name] || []
@@ -85,13 +113,8 @@ function App() {
   const handleSelectMessage = (name: string) => {
     setSelected(name)
     setFocusedPersonId(null)
-    setMessages((prev) => {
-      if (prev[name]) return prev
-      return { ...prev, [name]: [] }
-    })
   }
 
-  // Accept either string (text) or a payload with type/content (for images)
   const handleSend = (payload: string | { type: 'text' | 'image'; content: string }) => {
     if (!selected) return
 
@@ -100,24 +123,37 @@ function App() {
         ? { type: 'text', content: payload, from: 'me', avatar: userPic || undefined }
         : { ...payload, from: 'me', avatar: userPic || undefined }
 
-    // push user's message
+    // Optimista UI update
     setMessages((prev) => {
       const prevMsgs = prev[selected] || []
       return { ...prev, [selected]: [...prevMsgs, msg] }
     })
 
-    // autosuggest reply after delay (from "them", light-blue bubble)
-    setTimeout(() => {
-      const pool = autoResponses.length ? autoResponses : DEFAULT_AUTO_RESPONSES
-      const replyText = pool[Math.floor(Math.random() * pool.length)]
-      const themAvatar = liked.find((l) => l.name === selected)?.imgSrc
-      const reply: Msg = { type: 'text', content: replyText, from: 'them', avatar: themAvatar }
+    const themAvatar = liked.find((l) => l.name === selected)?.imgSrc
 
-      setMessages((prev) => {
-        const prevMsgs = prev[selected] || []
-        return { ...prev, [selected]: [...prevMsgs, reply] }
+    fetch(`${BACKEND}/api/messages/${encodeURIComponent(selected)}/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: msg.type,
+        content: msg.content,
+        from: 'me',
+        avatar: userPic || null,
+        themAvatar: themAvatar || null,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.autoReply) {
+          setTimeout(() => {
+            setMessages((prev) => {
+              const prevMsgs = prev[selected] || []
+              return { ...prev, [selected]: [...prevMsgs, data.autoReply] }
+            })
+          }, 700)
+        }
       })
-    }, 700)
+      .catch((err) => console.error('Failed to send message', err))
   }
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,18 +169,6 @@ function App() {
 
   const redOpacity = Math.max(0, -dragProgress) * 0.75
   const greenOpacity = Math.max(0, dragProgress) * 0.75
-
-  // ref a chat üzenetek konténeréhez
-  const messagesRef = useRef<HTMLDivElement | null>(null)
-
-  // amikor változnak az üzenetek vagy a kiválasztott chat, görgessünk az utolsó üzenethez
-  useEffect(() => {
-    if (!selected) return
-    const el = messagesRef.current
-    if (!el) return
-    // azonnal az aljára állítjuk (ha inkább smooth kell, használd a behavior:'smooth'-ot)
-    el.scrollTop = el.scrollHeight
-  }, [messages, selected])
 
   return (
     <div className="app-root">
@@ -194,7 +218,6 @@ function App() {
                     Chat with {selected}
                   </button>
                 </h3>
-
                 <div className="chat-close">
                   <button onClick={() => { setSelected(null); setFocusedPersonId(null) }} className="chat-close-btn" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✖</button>
                 </div>
@@ -234,6 +257,7 @@ function App() {
                       display: 'flex',
                       flexDirection: 'column',
                       gap: 8,
+                      overflowY: 'auto',
                     }}
                   >
                     {(messages[selected] || []).map((msg, i) => (
